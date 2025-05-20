@@ -26,3 +26,26 @@ db.students.insertMany([
     courses: ["Computer Science"] // Another entry for same name to test MapReduce
   }
 ]);
+
+
+  aggregation:
+db.students.aggregate([
+  {
+    $project: {
+      name: 1,
+      courseCount: {
+        $cond: {
+          if: { $isArray: "$courses" },
+          then: { $size: "$courses" },
+          else: 0
+        }
+      }
+    }
+  },
+  {
+    $group: {
+      _id: "$name",
+      totalCourses: { $sum: "$courseCount" }
+    }
+  }
+]);
